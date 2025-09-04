@@ -3,6 +3,7 @@ import type { Insight } from "$models/insight.ts";
 import type { HasDBClient } from "../shared.ts";
 import * as insightsTable from "$tables/insights.ts";
 
+// Input validation schema
 const CreateInsightInput = z.object({
   brand: z.number().int().min(0, "Brand must be a non-negative integer"),
   text: z.string().min(1, "Text cannot be empty").max(1000, "Text too long"),

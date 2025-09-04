@@ -1,12 +1,11 @@
-// operations/delete-insight.ts
 import type { HasDBClient } from "../shared.ts";
-import lookupInsight from "../operations/delete-insight.ts";
+import lookupInsight from "./lookup-insight.ts";
 
 type Input = HasDBClient & {
   id: number;
 };
 
-type Result = 
+type Result =
   | { success: true }
   | { success: false; error: string; notFound?: boolean };
 
@@ -16,7 +15,7 @@ export default (input: Input): Result => {
   try {
     // First check if the insight exists
     const existingInsight = lookupInsight({ db: input.db, id: input.id });
-    
+
     if (!existingInsight) {
       console.log("Insight not found for deletion");
       return { success: false, error: "Insight not found", notFound: true };
@@ -24,18 +23,19 @@ export default (input: Input): Result => {
 
     console.log("Found insight to delete:", existingInsight);
 
-    // Delete the insight using prepared statement
-    const result = input.db.sql`DELETE FROM insights WHERE id = ${input.id}`;
-    
-    // Check if any rows were affected
-    if (result.changes === 0) {
-      console.log("No rows were deleted");
+    // Delete using exec method to get changes info
+    const result = input.db.exec(`DELETE FROM insights WHERE id = ${input.id}`);
+
+    // Note: exec doesn't return changes count, so we verify by checking if record still exists
+    const stillExists = lookupInsight({ db: input.db, id: input.id });
+
+    if (stillExists) {
+      console.log("Deletion failed - record still exists");
       return { success: false, error: "Failed to delete insight" };
     }
 
     console.log(`Successfully deleted insight with id=${input.id}`);
     return { success: true };
-
   } catch (error) {
     console.error("Error deleting insight:", error);
     return { success: false, error: "Failed to delete insight" };

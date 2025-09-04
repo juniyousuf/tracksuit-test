@@ -27,8 +27,9 @@ try {
   db.exec(insightsTable.createTable);
   console.log("Database tables initialized");
 } catch (error) {
-  // Table might already exist, which is fine for IF NOT EXISTS
-  console.log("Database tables already exist:", error.message);
+  // Table might already exist with IF NOT EXISTS
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  console.log("Database tables already exist:", errorMessage);
 }
 
 console.log("Initialising server");
@@ -36,10 +37,7 @@ console.log("Initialising server");
 const router = new oak.Router();
 
 // CORS middleware for frontend integration
-const corsMiddleware = async (
-  ctx: oak.Context,
-  next: () => Promise<unknown>,
-) => {
+router.use(async (ctx, next) => {
   ctx.response.headers.set("Access-Control-Allow-Origin", "*");
   ctx.response.headers.set(
     "Access-Control-Allow-Methods",
@@ -56,15 +54,15 @@ const corsMiddleware = async (
   }
 
   await next();
-};
+});
 
-router.use(corsMiddleware);
-
+// Health check
 router.get("/_health", (ctx) => {
   ctx.response.body = "OK";
   ctx.response.status = 200;
 });
 
+// List all insights
 router.get("/insights", (ctx) => {
   try {
     const result = listInsights({ db });
@@ -77,6 +75,7 @@ router.get("/insights", (ctx) => {
   }
 });
 
+// Get specific insight
 router.get("/insights/:id", (ctx) => {
   try {
     const params = ctx.params as Record<string, any>;
@@ -104,6 +103,7 @@ router.get("/insights/:id", (ctx) => {
   }
 });
 
+// Create new insight
 router.post("/insights", async (ctx) => {
   try {
     const body = await ctx.request.body.json();
@@ -123,6 +123,7 @@ router.post("/insights", async (ctx) => {
   }
 });
 
+// Delete insight
 router.delete("/insights/:id", (ctx) => {
   try {
     const params = ctx.params as Record<string, any>;
