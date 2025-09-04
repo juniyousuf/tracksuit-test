@@ -22,6 +22,7 @@ export type Insert = {
 
 // DEPRECATED: This function has SQL injection vulnerability
 // Use prepared statements in operations instead
+// Leaving it as is for interview chat
 export const insertStatement = (item: Insert) => {
   const escapedText = item.text.replace(/'/g, "''");
   return `INSERT INTO insights (brand, createdAt, text) VALUES (${item.brand}, '${item.createdAt}', '${escapedText}')`;
