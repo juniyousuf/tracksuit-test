@@ -1,4 +1,3 @@
-// main.ts - Complete backend implementation
 // deno-lint-ignore-file no-explicit-any
 import { Database } from "@db/sqlite";
 import * as oak from "@oak/oak";
