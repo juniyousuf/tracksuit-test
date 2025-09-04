@@ -13,6 +13,11 @@
   padding: var(--size-4);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-grey-300);
+  transition: opacity 250ms ease, box-shadow 250ms ease;
+}
+
+.insight:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .insight-meta {
@@ -33,13 +38,35 @@
   width: var(--size-5);
   height: var(--size-5);
   cursor: pointer;
-  transition: stroke 250ms ease;
-  &:hover {
-    stroke: var(--color-red-500);
-  }
+  transition: stroke 250ms ease, opacity 250ms ease;
+}
+
+.insight-delete:hover {
+  stroke: var(--color-red-500);
+}
+
+.insight-delete-loading {
+  opacity: 0.5;
+  cursor: not-allowed;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.insight-delete-loading:hover {
+  stroke: currentColor;
 }
 
 .insight-content {
   font: var(--text-lg);
   margin: var(--size-4) 0 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
