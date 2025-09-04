@@ -1,5 +1,5 @@
 export const createTable = `
-  CREATE TABLE insights (
+  CREATE TABLE IF NOT EXISTS insights (
     id INTEGER PRIMARY KEY ASC NOT NULL,
     brand INTEGER NOT NULL,
     createdAt TEXT NOT NULL,
@@ -20,5 +20,9 @@ export type Insert = {
   text: string;
 };
 
-export const insertStatement = (item: Insert) =>
-  `INSERT INTO insights (brand, createdAt, text) VALUES (${item.brand}, '${item.createdAt}', '${item.text}')`;
+// DEPRECATED: This function has SQL injection vulnerability
+// Use prepared statements in operations instead
+export const insertStatement = (item: Insert) => {
+  const escapedText = item.text.replace(/'/g, "''");
+  return `INSERT INTO insights (brand, createdAt, text) VALUES (${item.brand}, '${item.createdAt}', '${escapedText}')`;
+};
